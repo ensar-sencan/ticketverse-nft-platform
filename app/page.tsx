@@ -1,207 +1,397 @@
-/**
- * Stellar Payment Dashboard - Main Page
- * 
- * This is the main page that brings all components together.
- * All blockchain logic is in lib/stellar-helper.ts (DO NOT MODIFY)
- * 
- * Your job: Make this UI/UX amazing! 🎨
- */
-
 'use client';
-
-import { useState } from 'react';
+import { FiGrid, FiPlusCircle, FiTrendingUp, FiCreditCard, FiZap, FiStar, FiSearch, FiX, FiDownload } from 'react-icons/fi';
+import { useState, useEffect } from 'react';
 import WalletConnection from '@/components/WalletConnection';
-import BalanceDisplay from '@/components/BalanceDisplay';
-import PaymentForm from '@/components/PaymentForm';
-import TransactionHistory from '@/components/TransactionHistory';
+import TicketCard, { TicketDetailModal } from '@/components/TicketCard';
+import { nftHelper, NFTTicket } from '@/lib/nft-helper';
+import Link from 'next/link';
+import TicketStats from '@/components/TicketStats';
 
 export default function Home() {
-  const [publicKey, setPublicKey] = useState<string>('');
-  const [isConnected, setIsConnected] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [publicKey, setPublicKey] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [tickets, setTickets] = useState<NFTTicket[]>([]);
+  const [selectedTicket, setSelectedTicket] = useState<NFTTicket | null>(null);
+  const [filterCategory, setFilterCategory] = useState<string>('All');
+  const [stats, setStats] = useState<{
+    total: number;
+    byCategory: Record<string, number>;
+    recentTickets: NFTTicket[];
+  }>({ total: 0, byCategory: {}, recentTickets: [] });
 
-  const handleConnect = (key: string) => {
-    setPublicKey(key);
-    setIsConnected(true);
+  useEffect(() => {
+    if (publicKey) {
+      loadTickets();
+    }
+  }, [publicKey]);
+
+  const loadTickets = () => {
+    if (!publicKey) return;
+    const myTickets = nftHelper.getMyTickets(publicKey);
+    const myStats = nftHelper.getStats(publicKey);
+    setTickets(myTickets);
+    setStats(myStats);
   };
 
-  const handleDisconnect = () => {
-    setPublicKey('');
-    setIsConnected(false);
-  };
+  const categories = ['All', 'Sports', 'Concert', 'Conference', 'Festival', 'Exhibition', 'Workshop', 'Other'];
 
-  const handlePaymentSuccess = () => {
-    // Refresh balance and transaction history
-    setRefreshKey(prev => prev + 1);
-  };
+  const filteredTickets = tickets.filter(ticket => {
+  // Category filter
+  const categoryMatch = filterCategory === 'All' || ticket.metadata.category === filterCategory;
+  
+  // Search filter
+  const searchMatch = searchQuery === '' || 
+    ticket.metadata.eventName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    ticket.metadata.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    ticket.metadata.ticketNumber.toLowerCase().includes(searchQuery.toLowerCase());
+  
+  return categoryMatch && searchMatch;
+});
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900">
-      {/* Header */}
-      <header className="border-b border-white/10 backdrop-blur-sm bg-black/20">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-2xl">
-                ⭐
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="fixed inset-0 z-0">
+        {/* Gradient Orbs */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-500/30 rounded-full blur-3xl animate-pulse delay-700"></div>
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:100px_100px]"></div>
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10">
+        {/* Glassmorphism Header */}
+        <header className="backdrop-blur-xl bg-white/5 border-b border-white/10 sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex justify-between items-center">
+              {/* Logo */}
+              <div className="flex items-center gap-4">
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur-lg opacity-75 group-hover:opacity-100 transition"></div>
+                  <div className="relative w-14 h-14 bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                    <FiCreditCard className="text-white" size={28} />
+                  </div>
+                </div>
+                <div>
+                  <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 animate-gradient">
+                    TicketVerse
+                  </h1>
+                  <p className="text-slate-400 text-sm font-medium">NFT Collection Platform</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white">Stellar Dashboard</h1>
-                <p className="text-white/60 text-sm">Testnet Payment Interface</p>
+
+              {/* Navigation */}
+              <div className="flex items-center gap-4">
+                {publicKey && (
+                  <>
+                    <Link 
+                      href="/mint"
+                      className="hidden md:flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 hover:shadow-2xl hover:shadow-purple-500/50 transition-all transform hover:scale-105 bg-[length:200%_100%] animate-gradient"
+                    >
+                      <FiZap size={20} />
+                      Mint Ticket
+                    </Link>
+                  </>
+                )}
+                <WalletConnection 
+                  onConnect={setPublicKey}
+                  onDisconnect={() => {
+                    setPublicKey(null);
+                    setTickets([]);
+                  }}
+                />
               </div>
             </div>
-            
-            <div className="flex items-center gap-4">
-              <a
-                href="https://stellar.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/60 hover:text-white text-sm transition-colors"
+          </div>
+        </header>
+
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {!publicKey ? (
+            // Ultra Modern Welcome Screen
+            <div className="flex flex-col items-center justify-center min-h-[75vh] text-center">
+              {/* Hero Icon */}
+              <div className="relative mb-8">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur-3xl opacity-50 animate-pulse"></div>
+                <div className="relative w-32 h-32 bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl">
+                  <FiCreditCard className="text-white" size={64} />
+                </div>
+              </div>
+
+              {/* Hero Text */}
+              <h2 className="text-6xl font-black mb-4">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 animate-gradient">
+                  Welcome to TicketVerse
+                </span>
+              </h2>
+              <p className="text-slate-300 text-xl mb-12 max-w-2xl leading-relaxed">
+                Your personal <span className="text-purple-400 font-bold">NFT ticket collection</span> platform on Stellar blockchain.
+                <br />
+                Collect, store, and showcase your <span className="text-pink-400 font-bold">event memories</span> forever. ✨
+              </p>
+
+              {/* Feature Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-4xl">
+                {[
+                  { icon: FiZap, title: 'Fast Minting', desc: '1-3 seconds on Stellar', color: 'from-yellow-500 to-orange-500' },
+                  { icon: FiStar, title: 'Low Cost', desc: 'Nearly free transactions', color: 'from-blue-500 to-cyan-500' },
+                  { icon: FiCreditCard, title: 'Your Collection', desc: 'Build your ticket gallery', color: 'from-purple-500 to-pink-500' }
+                ].map((feature, i) => (
+                  <div key={i} className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all transform hover:scale-105">
+                    <div className={`w-12 h-12 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center mb-4`}>
+                      <feature.icon className="text-white" size={24} />
+                    </div>
+                    <h3 className="text-white font-bold text-lg mb-2">{feature.title}</h3>
+                    <p className="text-slate-400 text-sm">{feature.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Getting Started */}
+              <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 max-w-md">
+                <h3 className="text-white font-bold text-xl mb-6 flex items-center gap-2">
+                  <span className="text-2xl">🚀</span> Getting Started
+                </h3>
+                <ol className="text-left space-y-4">
+                  {[
+                    'Connect your Stellar wallet above',
+                    'Mint your first NFT ticket',
+                    'Build your collection',
+                    'Share your memories!'
+                  ].map((step, i) => (
+                    <li key={i} className="flex items-start gap-3 text-slate-300">
+                      <span className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                        {i + 1}
+                      </span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          ) : tickets.length === 0 ? (
+            // Empty State with Animation
+            <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
+              <div className="relative mb-8">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur-2xl opacity-30 animate-pulse"></div>
+                <div className="relative w-40 h-40 backdrop-blur-xl bg-white/5 border border-white/10 rounded-full flex items-center justify-center">
+                  <FiGrid className="text-slate-400" size={80} />
+                </div>
+              </div>
+              <h2 className="text-4xl font-black text-white mb-4">
+                No Tickets Yet
+              </h2>
+              <p className="text-slate-400 text-lg mb-8 max-w-md">
+                Start building your collection by minting your first NFT ticket!
+              </p>
+              <Link 
+                href="/mint"
+                className="group relative overflow-hidden px-10 py-5 rounded-2xl font-black text-lg text-white transition-all transform hover:scale-105"
               >
-                About Stellar
-              </a>
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/60 hover:text-white text-sm transition-colors"
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-[length:200%_100%] animate-gradient"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 blur-xl transition-opacity"></div>
+                <span className="relative flex items-center gap-3">
+                  <FiPlusCircle size={28} />
+                  Mint Your First Ticket
+                </span>
+              </Link>
+            </div>
+          ) : (
+            // Ticket Gallery with Ultra Modern Stats
+            <>
+              {/* Ultra Modern Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                {[
+                  { label: 'Total Tickets', value: stats.total, icon: FiCreditCard, gradient: 'from-purple-500 via-purple-600 to-pink-600' },
+                  { label: 'Categories', value: Object.keys(stats.byCategory).length, icon: FiGrid, gradient: 'from-pink-500 via-pink-600 to-purple-600' },
+                  { label: 'Collection Score', value: '⭐', icon: FiTrendingUp, gradient: 'from-blue-500 via-cyan-600 to-purple-600' }
+                ].map((stat, i) => (
+                  <div key={i} className="group relative overflow-hidden backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/10 transition-all">
+                    <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-10 transition-opacity`}></div>
+                    <div className="relative flex items-center justify-between">
+                      <div>
+                        <p className="text-slate-400 text-sm font-medium mb-2">{stat.label}</p>
+                        <p className="text-5xl font-black text-white">{stat.value}</p>
+                      </div>
+                      <div className={`w-16 h-16 bg-gradient-to-br ${stat.gradient} rounded-2xl flex items-center justify-center shadow-2xl`}>
+                        <stat.icon size={32} className="text-white" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+                            {/* COLLECTION INSIGHTS */}
+              {tickets.length >= 1 && <TicketStats tickets={tickets} />}
+                            {/* SEARCH BAR */}
+              {tickets.length > 0 && (
+                <div className="mb-6">
+                  <div className="relative">
+                    <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="🔍 Search tickets by name, location, or number..."
+                      className="w-full pl-12 pr-12 py-4 backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                      >
+                        <FiX size={20} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* EXPORT BUTTON */}
+              {tickets.length > 0 && (
+                <div className="flex justify-end mb-6">
+                  <button
+                    onClick={() => {
+                      const exportData = {
+                        owner: publicKey,
+                        exportDate: new Date().toISOString(),
+                        totalTickets: stats.total,
+                        categories: stats.byCategory,
+                        tickets: tickets.map(t => ({
+                          id: t.id,
+                          eventName: t.metadata.eventName,
+                          category: t.metadata.category,
+                          date: t.metadata.eventDate,
+                          location: t.metadata.location,
+                          ticketNumber: t.metadata.ticketNumber,
+                          assetCode: t.assetCode,
+                          mintedAt: t.mintedAt
+                        }))
+                      };
+                      
+                      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                      const url = URL.createObjectURL(blob);
+                      const link = document.createElement('a');
+                      link.href = url;
+                      link.download = `ticketverse-collection-${Date.now()}.json`;
+                      link.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="group flex items-center gap-2 px-6 py-3 backdrop-blur-xl bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white font-semibold transition-all transform hover:scale-105"
+                  >
+                    <FiDownload size={20} className="group-hover:animate-bounce" />
+                    Export Collection
+                  </button>
+                </div>
+              )}
+
+              {/* Glassmorphism Filter Pills */}
+              <div className="flex items-center gap-3 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+                <span className="text-slate-400 font-bold text-sm whitespace-nowrap">Filter:</span>
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setFilterCategory(cat)}
+                    className={`
+                      relative px-6 py-3 rounded-full font-bold text-sm whitespace-nowrap transition-all transform hover:scale-105
+                      ${filterCategory === cat 
+                        ? 'text-white shadow-2xl' 
+                        : 'backdrop-blur-xl bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10'
+                      }
+                    `}
+                  >
+                    {filterCategory === cat && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-full bg-[length:200%_100%] animate-gradient"></div>
+                    )}
+                    <span className="relative flex items-center gap-2">
+                      {cat}
+                      {cat !== 'All' && stats.byCategory[cat] && (
+                        <span className="px-2 py-0.5 bg-white/20 rounded-full text-xs">
+                          {stats.byCategory[cat]}
+                        </span>
+                      )}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+                            {/* Tickets Grid */}
+              {filteredTickets.length === 0 ? (
+                <div className="text-center py-20 backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl">
+                  <div className="relative mb-6 inline-block">
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur-xl opacity-30"></div>
+                    <div className="relative w-24 h-24 bg-gradient-to-br from-slate-700 to-slate-800 rounded-full flex items-center justify-center">
+                      <FiSearch className="text-slate-400" size={48} />
+                    </div>
+                  </div>
+                  <h3 className="text-white text-2xl font-bold mb-2">No tickets found</h3>
+                  <p className="text-slate-400 mb-6">
+                    {searchQuery 
+                      ? `No results for "${searchQuery}"`
+                      : 'No tickets in this category'
+                    }
+                  </p>
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="px-6 py-3 backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white font-semibold transition-all"
+                    >
+                      Clear Search
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {filteredTickets.map((ticket) => (
+                    <TicketCard
+                      key={ticket.id}
+                      ticket={ticket}
+                      onClick={() => setSelectedTicket(ticket)}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Floating Action Button */}
+              <Link 
+                href="/mint"
+                className="fixed bottom-8 right-8 md:hidden group"
               >
-                GitHub
-              </a>
-            </div>
-          </div>
-        </div>
-      </header>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur-xl opacity-75 group-hover:opacity-100 transition"></div>
+                <div className="relative w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-2xl">
+                  <FiPlusCircle className="text-white" size={32} />
+                </div>
+              </Link>
+            </>
+          )}
+        </main>
+      </div>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* Welcome Banner */}
-        {!isConnected && (
-          <div className="mb-8 bg-gradient-to-r from-blue-500/20 to-purple-600/20 border border-blue-500/30 rounded-2xl p-8 text-center">
-            <h2 className="text-3xl font-bold text-white mb-3">
-              Welcome to Stellar Payment Dashboard! 👋
-            </h2>
-            <p className="text-white/70 max-w-2xl mx-auto">
-              Connect your wallet to view your balance, send XLM payments, and track your transaction history.
-              All on Stellar's lightning-fast blockchain.
-            </p>
-          </div>
-        )}
+      {/* Modal */}
+      {selectedTicket && (
+        <TicketDetailModal
+          ticket={selectedTicket}
+          onClose={() => setSelectedTicket(null)}
+        />
+      )}
 
-        {/* Wallet Connection */}
-        <div className="mb-8">
-          <WalletConnection onConnect={handleConnect} onDisconnect={handleDisconnect} />
-        </div>
-
-        {/* Dashboard Content - Only show when connected */}
-        {isConnected && publicKey && (
-          <div className="space-y-8">
-            {/* Balance Section */}
-            <div key={`balance-${refreshKey}`}>
-              <BalanceDisplay publicKey={publicKey} />
-            </div>
-
-            {/* Two Column Layout for Payment Form and Transaction History */}
-            <div className="grid lg:grid-cols-2 gap-8">
-              {/* Payment Form */}
-              <div>
-                <PaymentForm publicKey={publicKey} onSuccess={handlePaymentSuccess} />
-              </div>
-
-              {/* Transaction History */}
-              <div key={`history-${refreshKey}`}>
-                <TransactionHistory publicKey={publicKey} />
-              </div>
-            </div>
-
-            {/* Info Cards */}
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
-                <div className="text-3xl mb-3">⚡</div>
-                <h3 className="text-white font-semibold mb-2">Lightning Fast</h3>
-                <p className="text-white/60 text-sm">
-                  Transactions settle in 3-5 seconds on Stellar network
-                </p>
-              </div>
-
-              <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
-                <div className="text-3xl mb-3">💰</div>
-                <h3 className="text-white font-semibold mb-2">Low Fees</h3>
-                <p className="text-white/60 text-sm">
-                  Transaction fees are just 0.00001 XLM (~$0.000001)
-                </p>
-              </div>
-
-              <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
-                <div className="text-3xl mb-3">🔒</div>
-                <h3 className="text-white font-semibold mb-2">Secure</h3>
-                <p className="text-white/60 text-sm">
-                  Built on proven blockchain technology with wallet encryption
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Getting Started Guide - Only show when not connected */}
-        {!isConnected && (
-          <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
-              <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4 text-2xl">
-                1️⃣
-              </div>
-              <h3 className="text-white font-semibold mb-2">Install a Wallet</h3>
-              <p className="text-white/60 text-sm">
-                Choose any Stellar wallet: Freighter, xBull, Lobstr, Albedo, and more!
-              </p>
-            </div>
-
-            <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
-              <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4 text-2xl">
-                2️⃣
-              </div>
-              <h3 className="text-white font-semibold mb-2">Connect</h3>
-              <p className="text-white/60 text-sm">
-                Click the connect button above and approve the connection request
-              </p>
-            </div>
-
-            <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
-              <div className="w-10 h-10 bg-pink-500/20 rounded-lg flex items-center justify-center mb-4 text-2xl">
-                3️⃣
-              </div>
-              <h3 className="text-white font-semibold mb-2">Get Testnet XLM</h3>
-              <p className="text-white/60 text-sm">
-                Use Friendbot to fund your testnet account with free XLM
-              </p>
-            </div>
-
-            <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
-              <div className="w-10 h-10 bg-indigo-500/20 rounded-lg flex items-center justify-center mb-4 text-2xl">
-                4️⃣
-              </div>
-              <h3 className="text-white font-semibold mb-2">Start Sending</h3>
-              <p className="text-white/60 text-sm">
-                Send XLM payments and track your transactions in real-time
-              </p>
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-white/10 mt-16">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="text-center text-white/40 text-sm">
-            <p className="mb-2">
-              Built with ❤️ using Stellar SDK | Running on Testnet
-            </p>
-            <p className="text-xs">
-              ⚠️ This is a testnet application. Do not use real funds.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <style jsx global>{`
+        @keyframes gradient {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        .animate-gradient {
+          animation: gradient 3s ease infinite;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 }
