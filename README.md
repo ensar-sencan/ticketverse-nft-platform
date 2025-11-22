@@ -1,48 +1,24 @@
-Ticket Verse
-Ticket Verse is an NFT-based ticketing system built on the Stellar blockchain. This project utilizes the Ezerone scaffold to provide a modern, decentralized approach to event ticket management. Each ticket is represented as an NFT, enabling secure, transparent, and fraud-resistant access control for events.
+# Ticket Verse - stellar zonguldak
 
-Features
-NFT-based Tickets: All tickets are created and managed as non-fungible tokens on the Stellar blockchain.
-Decentralized: Leverages the security and transparency of Stellar to prevent ticket fraud and duplication.
-Easy Integration: Built on the Ezerone scaffold for rapid development and deployment.
-User-Friendly Interface: Simple and intuitive processes for both event organizers and attendees.
-Installation
-bash
+**Ticket Verse**, Stellar blockchain üzerine kurulmuş NFT tabanlı bir biletleme sistemidir. Bu proje, modern ve merkeziyetsiz bir etkinlik bilet yönetimi sağlamak için **Ezerone scaffold** yapısını kullanır. Her bilet bir NFT olarak temsil edildiği için güvenli, şeffaf ve sahteciliğe karşı dayanıklı bir erişim kontrolü sağlar.
+
+---
+
+## 🚀 Özellikler
+
+- **NFT Tabanlı Biletler:** Tüm biletler Stellar blockchain üzerinde benzersiz NFT’ler olarak oluşturulur ve yönetilir.  
+- **Merkeziyetsiz Mimari:** Stellar’ın güvenliği ve şeffaflığı sayesinde bilet sahteciliği ve çoğaltma önlenir.  
+- **Kolay Entegrasyon:** Ezerone scaffold sayesinde hızlı geliştirme ve dağıtım imkânı.  
+- **Kullanıcı Dostu Arayüz:** Hem organizatörler hem de katılımcılar için basit ve sezgisel kullanım.
+
+---
+
+## 🛠️ Kurulum
+
+```bash
 git clone https://github.com/yourusername/ticket-verse.git
 cd ticket-verse
 npm install
-Usage
-Configure Stellar Network
-Edit the configuration files to set your desired Stellar network (mainnet or testnet) and relevant wallet credentials.
-
-Start the Application
-
-bash
-npm start
-Issue Tickets
-Organizers can create event tickets as NFTs. Attendees can purchase and receive their tickets directly into their Stellar wallet.
-
-Technologies
-Stellar Blockchain
-NFT Standards
-Ezerone Scaffold
-Node.js / TypeScript / JavaScript
-React (if front-end included)
-Project Structure
-Code
-ticket-verse/
-├── README.md
-├── package.json
-├── src/
-│   ├── contracts/
-│   ├── components/
-│   ├── utils/
-│   └── index.js
-Contributing
-Contributions are welcome! Please submit a pull request or open an issue to discuss changes or improvements.
-
-License
-This project is licensed under the MIT License.
 
 <img width="1918" height="902" alt="Ekran görüntüsü 2025-11-22 200356" src="https://github.com/user-attachments/assets/5700f288-dbe9-413b-8cf5-d395587f6058" />
 <img width="1919" height="1033" alt="Ekran görüntüsü 2025-11-22 200251" src="https://github.com/user-attachments/assets/d61a6f3b-23ff-42fc-b62a-319be55c6692" />
