@@ -20,6 +20,9 @@ git clone https://github.com/yourusername/ticket-verse.git
 cd ticket-verse
 npm install
 
+
+```
+
 <img width="1918" height="902" alt="Ekran görüntüsü 2025-11-22 200356" src="https://github.com/user-attachments/assets/5700f288-dbe9-413b-8cf5-d395587f6058" />
 <img width="1919" height="1033" alt="Ekran görüntüsü 2025-11-22 200251" src="https://github.com/user-attachments/assets/d61a6f3b-23ff-42fc-b62a-319be55c6692" />
 <img width="1919" height="905" alt="Ekran görüntüsü 2025-11-22 200243" src="https://github.com/user-attachments/assets/559dea65-9fab-40e9-97a0-7d67c6ae0a0b" />
