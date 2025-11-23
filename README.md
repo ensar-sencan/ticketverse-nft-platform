@@ -1,28 +1,30 @@
-# Ticket Verse - stellar zonguldak
+# Ticket Verse - Stellar Zonguldak
 
-**Ticket Verse**, Stellar blockchain üzerine kurulmuş NFT tabanlı bir biletleme sistemidir. Bu proje, modern ve merkeziyetsiz bir etkinlik bilet yönetimi sağlamak için **Ezerone scaffold** yapısını kullanır. Her bilet bir NFT olarak temsil edildiği için güvenli, şeffaf ve sahteciliğe karşı dayanıklı bir erişim kontrolü sağlar.
-
----
-
-## 🚀 Özellikler
-
-- **NFT Tabanlı Biletler:** Tüm biletler Stellar blockchain üzerinde benzersiz NFT’ler olarak oluşturulur ve yönetilir.  
-- **Merkeziyetsiz Mimari:** Stellar’ın güvenliği ve şeffaflığı sayesinde bilet sahteciliği ve çoğaltma önlenir.  
-- **Kolay Entegrasyon:** Ezerone scaffold sayesinde hızlı geliştirme ve dağıtım imkânı.  
-- **Kullanıcı Dostu Arayüz:** Hem organizatörler hem de katılımcılar için basit ve sezgisel kullanım.
+**Ticket Verse** is an NFT-based ticketing system built on the Stellar blockchain. This project uses the **Ezerone scaffold** to provide a modern and decentralized event ticket management solution. Because each ticket is represented as an NFT, the system provides secure, transparent, and fraud-resistant access control.
 
 ---
 
-## 🛠️ Kurulum
+## 🚀 Features
+
+- **NFT-Based Tickets:** All tickets are created and managed as unique NFTs on the Stellar blockchain.  
+- **Decentralized Architecture:** Prevents ticket fraud and duplication by leveraging Stellar’s security and transparency.  
+- **Easy Integration:** Rapid development and deployment enabled by the Ezerone scaffold.  
+- **User-Friendly Interface:** Simple and intuitive UX for both organizers and attendees.
+
+---
+
+## 🛠️ Installation
 
 ```bash
 git clone https://github.com/yourusername/ticket-verse.git
 cd ticket-verse
 npm install
-
-
 ```
-https://drive.google.com/file/d/16rC9X87KJ3hyq8MFW3S4kvnixmy1h03d/view?usp=sharing      -->Video of the site in full operation.
+
+Video of the site in full operation:
+https://drive.google.com/file/d/16rC9X87KJ3hyq8MFW3S4kvnixmy1h03d/view?usp=sharing
+
+Screenshots:
 <img width="1918" height="902" alt="Ekran görüntüsü 2025-11-22 200356" src="https://github.com/user-attachments/assets/5700f288-dbe9-413b-8cf5-d395587f6058" />
 <img width="1919" height="1033" alt="Ekran görüntüsü 2025-11-22 200251" src="https://github.com/user-attachments/assets/d61a6f3b-23ff-42fc-b62a-319be55c6692" />
 <img width="1919" height="905" alt="Ekran görüntüsü 2025-11-22 200243" src="https://github.com/user-attachments/assets/559dea65-9fab-40e9-97a0-7d67c6ae0a0b" />
